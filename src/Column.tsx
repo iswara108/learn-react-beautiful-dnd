@@ -14,8 +14,11 @@ const Title = styled.h3`
   padding: 8px;
 `
 
-const TaskList = styled.div`
+const TaskList = styled.div<{ isDraggingOver: boolean }>`
   padding: 8px;
+  transition: background-color, 0.2s ease;
+  background-color: ${({ isDraggingOver }) =>
+    isDraggingOver ? 'skyBlue' : 'white'};
 `
 
 export default function Column({
@@ -29,8 +32,12 @@ export default function Column({
     <Container>
       <Title>{column.title}</Title>
       <Droppable droppableId={column.id}>
-        {provided => (
-          <TaskList ref={provided.innerRef} {...provided.droppableProps}>
+        {(provided, snapshot) => (
+          <TaskList
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            isDraggingOver={snapshot.isDraggingOver}
+          >
             {tasks.map((task, i) => (
               <Task key={task.id} task={task} index={i} />
             ))}
