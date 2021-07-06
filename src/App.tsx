@@ -17,9 +17,11 @@ export default function App() {
   const [tasks] = React.useState<Tasks>(initialState.tasks)
   const [columns, setColumns] = React.useState<Columns>(initialState.columns)
   const [columnOrder] = React.useState(initialState.columnOrder)
+  const [homeIndex, setHomeIndex] = React.useState<number | null>(null)
 
   const onDragEnd: (result: DropResult, provided: ResponderProvided) => void =
     ({ destination, source, draggableId }) => {
+      setHomeIndex(null)
       // if the object fell off limits
       if (!destination) return
 
@@ -62,16 +64,26 @@ export default function App() {
     }
 
   const onDragStart: (initial: DragStart, provided: ResponderProvided) => void =
-    (initial, provided) => {}
+    (initial, provided) => {
+      setHomeIndex(columnOrder.indexOf(initial.source.droppableId))
+    }
 
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
       <Container>
-        {columnOrder.map(columnId => {
+        {columnOrder.map((columnId, i) => {
           const column = columns[columnId]
           const tasksArray = column.taskIds.map(taskId => tasks[taskId])
 
-          return <Column key={column.id} column={column} tasks={tasksArray} />
+          const isDropDisabled = homeIndex === null ? false : i < homeIndex
+          return (
+            <Column
+              key={column.id}
+              column={column}
+              tasks={tasksArray}
+              isDropDisabled={isDropDisabled}
+            />
+          )
         })}
       </Container>
     </DragDropContext>

@@ -29,15 +29,21 @@ const TaskList = styled.div<{ isDraggingOver: boolean }>`
 
 export default function Column({
   column,
-  tasks
+  tasks,
+  isDropDisabled
 }: {
   column: Columns[1]
   tasks: Tasks[1][]
+  isDropDisabled: boolean
 }) {
   return (
     <Container>
       <Title>{column.title}</Title>
-      <Droppable droppableId={column.id}>
+      <Droppable
+        droppableId={column.id}
+        // type={column.id === 'column-3' ? 'done' : 'active'}
+        isDropDisabled={isDropDisabled}
+      >
         {(provided, snapshot) => (
           <TaskList
             ref={provided.innerRef}
