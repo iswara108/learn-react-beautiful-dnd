@@ -3,6 +3,7 @@ import initialState, { Columns, Tasks } from './initialData'
 import Column from './Column'
 import {
   DragDropContext,
+  DragStart,
   DropResult,
   ResponderProvided
 } from 'react-beautiful-dnd'
@@ -33,8 +34,11 @@ export default function App() {
       setColumns({ ...columns, [newColumn.id]: newColumn })
     }
 
+  const onDragStart: (initial: DragStart, provided: ResponderProvided) => void =
+    (initial, provided) => {}
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
       {columnOrder.map(columnId => {
         const column = columns[columnId]
         const tasksArray = column.taskIds.map(taskId => tasks[taskId])
