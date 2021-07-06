@@ -4,6 +4,7 @@ import Column from './Column'
 import {
   DragDropContext,
   DragStart,
+  Droppable,
   DropResult,
   ResponderProvided
 } from 'react-beautiful-dnd'
@@ -16,11 +17,11 @@ const Container = styled.div`
 export default function App() {
   const [tasks] = React.useState<Tasks>(initialState.tasks)
   const [columns, setColumns] = React.useState<Columns>(initialState.columns)
-  const [columnOrder] = React.useState(initialState.columnOrder)
+  const [columnOrder, setColumnOrder] = React.useState(initialState.columnOrder)
   const [homeIndex, setHomeIndex] = React.useState<number | null>(null)
 
   const onDragEnd: (result: DropResult, provided: ResponderProvided) => void =
-    ({ destination, source, draggableId }) => {
+    ({ destination, source, draggableId, type }) => {
       setHomeIndex(null)
       // if the object fell off limits
       if (!destination) return
@@ -31,6 +32,15 @@ export default function App() {
         destination.index === source.index
       )
         return
+
+      if (type === 'column') {
+        const newColumnOrder = Array.from(columnOrder)
+        newColumnOrder.splice(source.index, 1)
+        newColumnOrder.splice(destination.index, 0, draggableId)
+
+        setColumnOrder(newColumnOrder)
+        return
+      }
 
       const start = columns[source.droppableId]
       const finish = columns[destination.droppableId]
@@ -70,22 +80,28 @@ export default function App() {
 
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      <Container>
-        {columnOrder.map((columnId, i) => {
-          const column = columns[columnId]
-          const tasksArray = column.taskIds.map(taskId => tasks[taskId])
+      <Droppable droppableId="all-columns" direction="horizontal" type="column">
+        {provided => (
+          <Container {...provided.droppableProps} ref={provided.innerRef}>
+            {columnOrder.map((columnId, i) => {
+              const column = columns[columnId]
+              const tasksArray = column.taskIds.map(taskId => tasks[taskId])
 
-          const isDropDisabled = homeIndex === null ? false : i < homeIndex
-          return (
-            <Column
-              key={column.id}
-              column={column}
-              tasks={tasksArray}
-              isDropDisabled={isDropDisabled}
-            />
-          )
-        })}
-      </Container>
+              const isDropDisabled = homeIndex === null ? false : i < homeIndex
+              return (
+                <Column
+                  key={column.id}
+                  column={column}
+                  tasks={tasksArray}
+                  isDropDisabled={isDropDisabled}
+                  index={i}
+                />
+              )
+            })}
+            {provided.placeholder}
+          </Container>
+        )}
+      </Droppable>
     </DragDropContext>
   )
 }

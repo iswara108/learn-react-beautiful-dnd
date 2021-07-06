@@ -22,15 +22,10 @@ const initialData: { tasks: Tasks; columns: Columns; columnOrder: string[] } = {
       id: 'column-2',
       title: 'In progress',
       taskIds: []
-    },
-    'column-3': {
-      id: 'column-3',
-      title: 'Done',
-      taskIds: []
     }
   },
   // facilitate reordering of columns
-  columnOrder: ['column-1', 'column-2', 'column-3']
+  columnOrder: ['column-1', 'column-2']
 }
 
 export default initialData
