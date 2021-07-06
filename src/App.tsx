@@ -7,6 +7,11 @@ import {
   DropResult,
   ResponderProvided
 } from 'react-beautiful-dnd'
+import styled from 'styled-components'
+
+const Container = styled.div`
+  display: flex;
+`
 
 export default function App() {
   const [tasks] = React.useState<Tasks>(initialState.tasks)
@@ -25,13 +30,35 @@ export default function App() {
       )
         return
 
-      const column = columns[source.droppableId]
-      const newTaskIds = Array.from(column.taskIds)
-      newTaskIds.splice(source.index, 1)
-      newTaskIds.splice(destination.index, 0, draggableId)
+      const start = columns[source.droppableId]
+      const finish = columns[destination.droppableId]
 
-      const newColumn: Columns[1] = { ...column, taskIds: newTaskIds }
-      setColumns({ ...columns, [newColumn.id]: newColumn })
+      if (start === finish) {
+        console.log('match', start, finish)
+        const newTaskIds = Array.from(start.taskIds)
+        newTaskIds.splice(source.index, 1)
+        newTaskIds.splice(destination.index, 0, draggableId)
+
+        const newColumn: Columns[1] = { ...start, taskIds: newTaskIds }
+        setColumns({ ...columns, [newColumn.id]: newColumn })
+      } else {
+        console.log('no match', start, finish)
+        const startTaskIds = Array.from(start.taskIds)
+        startTaskIds.splice(source.index, 1)
+
+        const newStart = { ...start, taskIds: startTaskIds }
+
+        const finishTaskIds = Array.from(finish.taskIds)
+        finishTaskIds.splice(destination.index, 0, draggableId)
+
+        const newFinish = { ...finish, taskIds: finishTaskIds }
+
+        setColumns({
+          ...columns,
+          [newStart.id]: newStart,
+          [newFinish.id]: newFinish
+        })
+      }
     }
 
   const onDragStart: (initial: DragStart, provided: ResponderProvided) => void =
@@ -39,12 +66,14 @@ export default function App() {
 
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      {columnOrder.map(columnId => {
-        const column = columns[columnId]
-        const tasksArray = column.taskIds.map(taskId => tasks[taskId])
+      <Container>
+        {columnOrder.map(columnId => {
+          const column = columns[columnId]
+          const tasksArray = column.taskIds.map(taskId => tasks[taskId])
 
-        return <Column key={column.id} column={column} tasks={tasksArray} />
-      })}
+          return <Column key={column.id} column={column} tasks={tasksArray} />
+        })}
+      </Container>
     </DragDropContext>
   )
 }

@@ -8,6 +8,10 @@ const Container = styled.div`
   margin: 8px;
   border: 1px solid lightgray;
   border-radius: 2px;
+  width: 220px;
+
+  display: flex;
+  flex-direction: column;
 `
 
 const Title = styled.h3`
@@ -15,10 +19,12 @@ const Title = styled.h3`
 `
 
 const TaskList = styled.div<{ isDraggingOver: boolean }>`
+  flex: 1;
   padding: 8px;
   transition: background-color, 0.2s ease;
   background-color: ${({ isDraggingOver }) =>
     isDraggingOver ? 'skyBlue' : 'white'};
+  min-height: 100px;
 `
 
 export default function Column({
