@@ -23,9 +23,17 @@ const TaskList = styled.div<{ isDraggingOver: boolean }>`
   padding: 8px;
   transition: background-color, 0.2s ease;
   background-color: ${({ isDraggingOver }) =>
-    isDraggingOver ? 'skyBlue' : 'inherit'};
+    isDraggingOver ? 'lightGrey' : 'inherit'};
   min-height: 100px;
 `
+
+const InnerList = React.memo(({ tasks }: { tasks: Tasks[1][] }) => (
+  <>
+    {tasks.map((task, i) => (
+      <Task key={task.id} task={task} index={i} />
+    ))}
+  </>
+))
 
 export default function Column({
   column,
@@ -38,6 +46,7 @@ export default function Column({
   isDropDisabled: boolean
   index: number
 }) {
+  console.log('col', column)
   return (
     <Draggable draggableId={column.id} index={index}>
       {provided => (
@@ -55,9 +64,7 @@ export default function Column({
                 {...provided.droppableProps}
                 isDraggingOver={snapshot.isDraggingOver}
               >
-                {tasks.map((task, i) => (
-                  <Task key={task.id} task={task} index={i} />
-                ))}
+                <InnerList tasks={tasks} />
                 {provided.placeholder}
               </TaskList>
             )}

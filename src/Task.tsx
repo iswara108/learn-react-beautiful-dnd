@@ -19,7 +19,7 @@ export default function Task({
   task: Tasks[1]
   index: number
 }) {
-  const isDragDisabled = task.id === 'task-1'
+  const isDragDisabled = false
   return (
     <Draggable
       draggableId={task.id}

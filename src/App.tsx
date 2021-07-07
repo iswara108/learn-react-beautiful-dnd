@@ -14,6 +14,32 @@ const Container = styled.div`
   display: flex;
 `
 
+const InnerList = React.memo(
+  ({
+    tasksMap,
+    column,
+    isDropDisabled,
+    index
+  }: {
+    tasksMap: Tasks
+    column: Columns[1]
+    isDropDisabled: boolean
+    index: number
+  }) => {
+    console.log('rerender', tasksMap, column, isDropDisabled, index)
+    const tasksArray = column.taskIds.map(taskId => tasksMap[taskId])
+
+    return (
+      <Column
+        column={column}
+        isDropDisabled={isDropDisabled}
+        index={index}
+        tasks={tasksArray}
+      />
+    )
+  }
+)
+
 export default function App() {
   const [tasks] = React.useState<Tasks>(initialState.tasks)
   const [columns, setColumns] = React.useState<Columns>(initialState.columns)
@@ -85,14 +111,13 @@ export default function App() {
           <Container {...provided.droppableProps} ref={provided.innerRef}>
             {columnOrder.map((columnId, i) => {
               const column = columns[columnId]
-              const tasksArray = column.taskIds.map(taskId => tasks[taskId])
 
               const isDropDisabled = homeIndex === null ? false : i < homeIndex
               return (
-                <Column
+                <InnerList
                   key={column.id}
                   column={column}
-                  tasks={tasksArray}
+                  tasksMap={tasks}
                   isDropDisabled={isDropDisabled}
                   index={i}
                 />
